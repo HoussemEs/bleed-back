@@ -77,12 +77,19 @@ public class CartImpl implements ICartService {
         commande = commandeRepository.save(commande);
         Float sum=0F;
         for(CartItem cartItem : cartItems){
-            sum = sum + (cartItem.getQuantity()*cartItem.getItem().getItemPrice());
+            Float discountedPrice = cartItem.getItem().getDiscountedPrice();
+
+            if (discountedPrice != null && discountedPrice > 0) {
+                sum += (cartItem.getQuantity() * discountedPrice);
+            } else {
+                sum += (cartItem.getQuantity() * cartItem.getItem().getItemPrice());
+            }
             Item item=cartItem.getItem();
             item.setStock(cartItem.getItem().getStock()-cartItem.getQuantity());
             itemRepository.save(item);
             cartItem.setState(commande.getIdCommande());
             cartItemRepository.save(cartItem);
+            cartItem.setCommande(commande); // Associate the cartItem with the Commande
         }
         cart.setDateLastUpdate(LocalDate.now());
         cart.setOwner(user);
@@ -112,6 +119,8 @@ public class CartImpl implements ICartService {
             cdto.setDateAdded(ci.getDateAdded());
             cdto.setIdItem(ci.getItem().getIdItem());
             cdto.setItemPrice(ci.getItem().getItemPrice());
+            cdto.setDiscountedPrice(ci.getItem().getDiscountedPrice());
+            cdto.setSize(ci.getSize());
             finalList.add(cdto);
         }
         return finalList;

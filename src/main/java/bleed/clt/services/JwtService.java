@@ -46,27 +46,26 @@ public class JwtService implements UserDetailsService {
         String userEmail = jwtRequest.getEmail();
         String userPassword = jwtRequest.getMdp();
         User user = userRepository.findByEmail(userEmail);
-        if(user!=null) {
-            System.out.println(user.getEmail()+"found by email");
-            //encryption
-            if (userPassword.equals(user.getMdp())) {
-                jwtToken = JWT.create()
-                        .withIssuer("bleedclt")
-                        .withSubject(user.getEmail())
-                        .withClaim("user", user.getIdUser())
-                        .withIssuedAt(new Date())
-                        .withExpiresAt(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000L))
-                        .withJWTId(UUID.randomUUID()
-                                .toString())
-                        .sign(Algorithm.HMAC512(SECRET.getBytes()));
-                    return new jwtDTO(jwtToken);
-            } else {
-                return null;
-            }
-        }else{
+
+        if(user != null && userPassword.equals(user.getMdp())) {
+            System.out.println(user.getEmail() + " found by email");
+
+            jwtToken = JWT.create()
+                    .withIssuer("bleedclt")
+                    .withSubject(user.getEmail())
+                    .withClaim("user", user.getIdUser())
+                    .withClaim("role", user.getRole()) // Add the 'role' claim to the token
+                    .withIssuedAt(new Date())
+                    .withExpiresAt(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000L))
+                    .withJWTId(UUID.randomUUID().toString())
+                    .sign(Algorithm.HMAC512(SECRET.getBytes()));
+
+            return new jwtDTO(jwtToken);
+        } else {
             return null;
         }
     }
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

@@ -17,10 +17,19 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class Item implements Serializable{
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long idItem;
     private Integer stock;
     private String nomItem;
     private String descItem;
     private Float itemPrice;
+    private Float discountPercentage;
+    private float discountedPrice;
+
+    public float getDiscountedPrice() {
+        return discountedPrice;
+    }
+
+    public void setDiscountedPrice(float discountedPrice) {
+        this.discountedPrice = discountedPrice;
+    }
 }

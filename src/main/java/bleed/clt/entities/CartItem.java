@@ -22,6 +22,7 @@ public class CartItem implements Serializable{
     private LocalDate dateAdded;
     private Integer quantity;
     private Long state;
+    private String size;
 
     @NotFound(action= NotFoundAction.IGNORE)
     @JsonIgnore
@@ -32,5 +33,8 @@ public class CartItem implements Serializable{
     @JsonIgnore
     @ManyToOne(cascade = CascadeType.PERSIST)
     private Cart cart;
+
+    @ManyToOne(cascade = CascadeType.PERSIST) // Define the relationship to Commande
+    private Commande commande; // Reference to Commande
 
 }

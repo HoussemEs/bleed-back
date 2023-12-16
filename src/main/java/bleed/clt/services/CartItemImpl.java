@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -28,6 +29,8 @@ public class CartItemImpl implements ICartItemService {
     @Autowired
     CartRepository cartRepository;
 
+
+
     @Override
     public Cart addItemToCart(ItemToCartDTO itemToCartDTO) {
         User user = userRepository.findById(itemToCartDTO.getIdUser()).orElse(null);
@@ -39,15 +42,26 @@ public class CartItemImpl implements ICartItemService {
         cartItem.setItem(item);
         cartItem.setCart(cart);
         cartItem.setDateAdded(LocalDate.now());
+        cartItem.setSize(itemToCartDTO.getSize());
+
+        // Update the cart total price considering the discounted price
+        Float discountedPrice = item.getDiscountedPrice();
+        if (discountedPrice != null && discountedPrice > 0) {
+            cart.setTotalPrice(cart.getTotalPrice() + (cartItem.getQuantity() * discountedPrice));
+        } else {
+            cart.setTotalPrice(cart.getTotalPrice() + (cartItem.getQuantity() * item.getItemPrice()));
+        }
+
         cartItem = cartItemRepository.save(cartItem);
-        cart.setTotalPrice(cart.getTotalPrice()+(cartItem.getQuantity()*item.getItemPrice()));
         return cartRepository.save(cart);
     }
+
 
     @Override
     public void validateItem(Long idCartItem) {
 
     }
+
 
     @Override
     public List<CartItem> getAllItems(Long idUser) {

@@ -17,5 +17,8 @@ public class CartItemsDisplayDTO implements Serializable {
     private String nomItem;
     private Float itemPrice;
     private Long idItem;
+    private String size;
+    private Float discountedPrice;
+
 }
 

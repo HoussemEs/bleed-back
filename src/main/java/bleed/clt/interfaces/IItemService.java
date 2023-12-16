@@ -11,4 +11,6 @@ public interface IItemService {
     Boolean deleteItem(Long idItem);
     Item getItem(Long idItem);
     List<Item> getAllItems();
+
+    Item applyDiscountToItem(Long itemId, Float discountPercentage);
 }
